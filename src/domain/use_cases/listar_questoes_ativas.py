@@ -1,0 +1,12 @@
+from src.domain.commons.use_case import UseCase
+from src.domain.models.dto.questao_completa_response import QuestaoCompletaResponse
+from src.domain.models.repositories.questao_repository import QuestaoRepository
+
+
+class ListarQuestoesAtivas(UseCase):
+
+    def __init__(self, repositorio: QuestaoRepository):
+        self.__repositorio = repositorio
+
+    def execute(self, request):
+        return list(map(lambda it: QuestaoCompletaResponse(it), self.__repositorio.obter_todos()))
