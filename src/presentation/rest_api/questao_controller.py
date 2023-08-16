@@ -7,7 +7,6 @@ from src.infrastructure.db.repositories_impl.questao_repository_db_impl import Q
 from src.presentation.utils.deserializers import deserialize_cadastro_questao_request
 from src.presentation.utils.handle_errors import handle_errors
 from src.presentation.utils.serializer import get_json
-from src.infrastructure.db.connection import Session
 
 questao_router_bp = Blueprint("questao_router", __name__)
 
@@ -17,7 +16,7 @@ questao_router_bp = Blueprint("questao_router", __name__)
 questao_repository = QuestaoRepositoryDbImpl()
 
 
-@questao_router_bp.route("/questao/listar", methods=["GET"])
+@questao_router_bp.route("/api/questao/listar", methods=["GET"])
 def listar_todas():
     try:
         use_case = ListarQuestoesAtivas(questao_repository)
@@ -27,7 +26,7 @@ def listar_todas():
         return handle_errors(ex)
 
 
-@questao_router_bp.route("/questao/exibir/<int:codigo>", methods=["GET"])
+@questao_router_bp.route("/api/questao/exibir/<int:codigo>", methods=["GET"])
 def exibir(codigo: int):
     try:
         use_case = ExibirQuestao(questao_repository)
@@ -37,7 +36,7 @@ def exibir(codigo: int):
         return handle_errors(ex)
 
 
-@questao_router_bp.route("/questao/cadastrar", methods=["POST"])
+@questao_router_bp.route("/api/questao/cadastrar", methods=["POST"])
 def cadastrar():
     try:
         cadastro_questao_request = deserialize_cadastro_questao_request(request)
@@ -48,7 +47,7 @@ def cadastrar():
         return handle_errors(ex)
 
 
-@questao_router_bp.route("/questao/buscar", methods=["GET"])
+@questao_router_bp.route("/api/questao/buscar", methods=["GET"])
 def buscar():
     try:
         return ListarQuestoesAtivas(questao_repository)
