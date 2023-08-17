@@ -5,7 +5,6 @@ from src.domain.commons.usuario_logado import obter_usuario_logado
 from src.domain.models.dto.cadastro_questao_request import CadastroQuestaoRequest
 from src.domain.models.dto.questao_completa_response import QuestaoCompletaResponse
 from src.domain.models.repositories.questao_repository import QuestaoRepository
-from src.domain.validators.validador_questao import validador_questao
 
 
 class CadastrarQuestao(UseCase):
@@ -18,5 +17,4 @@ class CadastrarQuestao(UseCase):
         questao = request.to_model()
         questao.cadastrador = nome_cadastrador
         questao.data_cadastro = datetime.now()
-        validador_questao(questao)
         return QuestaoCompletaResponse(self.__repositorio.salvar(questao))

@@ -12,7 +12,7 @@ class QuestaoRepositoryMemImpl(QuestaoRepository):
         self.__base = []
         self.__alternativa_repository = alternativa_repository
 
-    def pesquisar_por_disciplina(self, filtro: FiltroQuestaoRequest) -> List[Questao]:
+    def obter_por_filtro(self, filtro: FiltroQuestaoRequest) -> List[Questao]:
         pass
 
     def obter_por_codigo(self, codigo: int) -> Optional[Questao]:

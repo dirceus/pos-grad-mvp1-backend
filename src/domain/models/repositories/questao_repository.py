@@ -8,7 +8,7 @@ from src.domain.models.questao import Questao
 class QuestaoRepository(ABC):
 
     @abstractmethod
-    def pesquisar_por_disciplina(self, filtro: FiltroQuestaoRequest) -> List[Questao]:
+    def obter_por_filtro(self, filtro: FiltroQuestaoRequest) -> List[Questao]:
         pass
 
     @abstractmethod

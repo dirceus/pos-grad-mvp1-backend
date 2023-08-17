@@ -1,4 +1,5 @@
-from src.domain.models.assunto import Assunto
+from typing import Optional
+
 from src.domain.models.enum.disciplina_enum import DisciplinaEnum
 from src.domain.models.enum.tipo_questao_enum import TipoQuestaoEnum
 
@@ -6,14 +7,11 @@ from src.domain.models.enum.tipo_questao_enum import TipoQuestaoEnum
 class FiltroQuestaoRequest:
 
     def __init__(self,
-                 tipo: TipoQuestaoEnum,
-                 instituicao: str,
-                 ano: int,
-                 evento: str,
-                 disciplina: DisciplinaEnum,
-                 assunto: Assunto,
-                 cadastrador: str,
-                 ativas: bool
+                 tipo: Optional[TipoQuestaoEnum],
+                 instituicao: Optional[str],
+                 ano: Optional[int],
+                 evento: Optional[str],
+                 disciplina: Optional[DisciplinaEnum],
                  ):
 
         self.tipo = tipo
@@ -21,6 +19,3 @@ class FiltroQuestaoRequest:
         self.ano = ano
         self.evento = evento
         self.disciplina = disciplina
-        self.assunto = assunto
-        self.cadastrador = cadastrador
-        self.ativo = ativas
