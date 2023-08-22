@@ -45,6 +45,7 @@ Estrutura de Pacotes:
 - OpenAPI
 - Pydantic
 - SQLAlchemy
+- SQLite3
 
 ## Como executar
 
