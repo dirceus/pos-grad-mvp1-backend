@@ -5,11 +5,14 @@ from flask_openapi3 import Tag, Info, OpenAPI
 from src.domain.use_cases.buscar_questoes_por_filtro import BuscarQuestoesPorFiltro
 from src.domain.use_cases.cadastrar_questao import CadastrarQuestao
 from src.domain.use_cases.exibir_questao import ExibirQuestao
-from src.domain.use_cases.listar_questoes_ativas import ListarQuestoesAtivas
+from src.domain.use_cases.excluir_questao import ExcluirQuestao
+from src.domain.use_cases.listar_assuntos_por_disciplina import ListarAssuntosPorDisciplina
+from src.domain.use_cases.listar_questoes import ListarQuestoes
+from src.infrastructure.db.repositories_impl.assunto_repository_db_impl import AssuntoRepositoryDbImpl
 from src.infrastructure.db.repositories_impl.questao_repository_db_impl import QuestaoRepositoryDbImpl
 from src.presentation.schemas.error import ErrorSchema
-from src.presentation.schemas.questao_schemas import QuestaoSchema, CadastrarQuestaoSchema, QuestaoPath, \
-    FiltroQuestaoSchema, QuestaoSimplesSchema
+from src.presentation.schemas.questao_schemas import QuestaoPath, QuestaoSchema, CadastrarQuestaoSchema, \
+    QuestaoSimplesSchema, FiltroQuestaoSchema, BuscarAssuntoQueryString, AssuntoSchema, ResultadoBooleanoSchema
 from src.presentation.utils.handle_errors import handle_errors
 from src.presentation.utils.serializer import serializa_dto
 
@@ -18,7 +21,9 @@ app = OpenAPI(__name__, info=info)
 
 CORS(app)
 
+# instanciando repositórios
 questao_repository = QuestaoRepositoryDbImpl()
+assunto_repository = AssuntoRepositoryDbImpl()
 
 # definindo tags
 home_tag = Tag(name="Documentação", description="Seleção de documentação: Swagger, Redoc ou RapiDoc")
@@ -32,21 +37,23 @@ def home():
     return redirect('/openapi')
 
 
-@app.get('/api/questao/listar', tags=[questao_tag])
+@app.get('/api/questao/listar', tags=[questao_tag],
+         responses={"200": QuestaoSimplesSchema, "500": ErrorSchema})
 def listar_todas():
     """ Obtêm todas as questões cadastradas com o estado ativo
 
     Retorna todas as questões ativas.
     """
     try:
-        use_case = ListarQuestoesAtivas(questao_repository)
-        resultado = use_case.execute(None)
+        use_case_listar_questoes = ListarQuestoes(questao_repository)
+        resultado = use_case_listar_questoes.execute(None)
         return make_response(serializa_dto(resultado), 200)
     except Exception as ex:
         return handle_errors(ex)
 
 
-@app.get('/api/questao/exibir/<int:codigo>')
+@app.get('/api/questao/exibir/<int:codigo>', tags=[questao_tag],
+         responses={"200": QuestaoSchema, "400": ErrorSchema, "500": ErrorSchema})
 def exibir(path: QuestaoPath):
     """Obtêm uma questão pelo código
 
@@ -54,15 +61,15 @@ def exibir(path: QuestaoPath):
     :return: Retorna uma representação de questão de acordo com código.
     """
     try:
-        use_case = ExibirQuestao(questao_repository)
-        resultado = use_case.execute(path.codigo)
+        use_case_exibir_questao = ExibirQuestao(questao_repository)
+        resultado = use_case_exibir_questao.execute(path.codigo)
         return make_response(serializa_dto(resultado), 200)
     except Exception as ex:
         return handle_errors(ex)
 
 
 @app.post('/api/questao/cadastrar', tags=[questao_tag],
-          responses={"200": QuestaoSchema}, )
+          responses={"200": QuestaoSchema, "500": ErrorSchema}, )
 def cadastrar(body: CadastrarQuestaoSchema):
     """Adiciona uma nova questão na base de dados
 
@@ -70,7 +77,7 @@ def cadastrar(body: CadastrarQuestaoSchema):
     """
     try:
         cadastro_questao_request = body.to_dto()
-        use_case_cadastrar_questao = CadastrarQuestao(questao_repository)
+        use_case_cadastrar_questao = CadastrarQuestao(questao_repository, assunto_repository)
         resultado = use_case_cadastrar_questao.execute(cadastro_questao_request)
 
         return make_response(serializa_dto(resultado), 200)
@@ -80,14 +87,45 @@ def cadastrar(body: CadastrarQuestaoSchema):
 
 @app.get('/api/questao/buscar', tags=[questao_tag],
          responses={"200": QuestaoSimplesSchema, "400": ErrorSchema, "500": ErrorSchema})
-def buscar(body: FiltroQuestaoSchema):
+def buscar(query: FiltroQuestaoSchema):
     """Faz uma busca de acordo com filtro de pesquisa
        Retorna as questões que atende ao filtro de pesquisa
     """
     try:
-        filtro_request = body.to_dto()
+        filtro_request = query.to_dto()
         use_case_buscar_questoes_por_filtro = BuscarQuestoesPorFiltro(questao_repository)
         resultado = use_case_buscar_questoes_por_filtro.execute(filtro_request)
         return make_response(serializa_dto(resultado), 200)
+    except Exception as ex:
+        return handle_errors(ex)
+
+
+@app.get('/api/questao/assuntos', tags=[questao_tag],
+         responses={"200": AssuntoSchema, "404": ErrorSchema, "500": ErrorSchema})
+def listar_assuntos(query: BuscarAssuntoQueryString):
+    """
+    Obtêm todos os assuntos associados a uma disciplina
+    :param query: identificador da disciplina
+    :return: lista dos assuntos associados a uma disciplina
+    """
+    try:
+        use_case_listar_assuntos = ListarAssuntosPorDisciplina(assunto_repository)
+        resultado = use_case_listar_assuntos.execute(query.disciplina)
+        return make_response(serializa_dto(resultado), 200)
+    except Exception as ex:
+        return handle_errors(ex)
+
+
+@app.delete('/api/questao/excluir/<int:codigo>', tags=[questao_tag],
+            responses={"200": ResultadoBooleanoSchema, "400": ErrorSchema, "404": ErrorSchema, "500": ErrorSchema})
+def excluir(path: QuestaoPath):
+    """Exclui logicamente uma questão
+
+    :param path: Identificador da questão
+    """
+    try:
+        use_case_excluir_questao = ExcluirQuestao(questao_repository)
+        resultado = use_case_excluir_questao.execute(path.codigo)
+        return make_response(serializa_dto({"resultado": resultado}), 200)
     except Exception as ex:
         return handle_errors(ex)

@@ -10,7 +10,8 @@ class QuestaoSimplesResponse:
         self.enunciado = questao.enunciado
         self.instituicao = questao.instituicao
         self.ano = questao.ano
-        self.evento = questao.evento
+        self.origem = CodigoDescricao(questao.origem.name, questao.origem.value)
+        self.origem_descricao = questao.origem_descricao
         self.disciplina = CodigoDescricao(questao.disciplina.name, questao.disciplina.value)
         self.cadastrador = questao.cadastrador
         self.data_cadastro = questao.data_cadastro

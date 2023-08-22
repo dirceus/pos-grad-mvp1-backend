@@ -24,7 +24,6 @@ class QuestaoRepositoryMemImpl(QuestaoRepository):
     def obter_todos(self) -> List[Questao]:
         return list(filter(lambda it: it.ativo, self.__base))
 
-
     def salvar(self, questao: Questao) -> Questao:
         questao.codigo = self.total_questoes() + 1
         for alternativa in questao.alternativas:
@@ -35,3 +34,6 @@ class QuestaoRepositoryMemImpl(QuestaoRepository):
 
     def total_questoes(self):
         return len(self.__base)
+
+    def excluir_questao(self, codigo: int) -> bool:
+        pass

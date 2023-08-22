@@ -22,3 +22,7 @@ class QuestaoRepository(ABC):
     @abstractmethod
     def salvar(self, questao: Questao) -> Questao:
         pass
+
+    @abstractmethod
+    def excluir_questao(self, codigo: int) -> bool:
+        pass

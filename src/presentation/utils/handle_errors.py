@@ -1,6 +1,7 @@
 from flask import make_response
 
-from src.domain.commons.exceptions import *
+from src.domain.commons.exceptions import InvalidInputException, InvalidStateException, QuestaoNotFoundException, \
+    BusinessException, InternalErrorException
 from src.presentation.utils.serializer import serializa_dto
 
 
@@ -8,7 +9,7 @@ class ErroResponse:
 
     def __init__(self, message, erro_details=None, status=500):
         self.message = message
-        self.erro_details = erro_details
+        self.details = erro_details
         self.status = status
 
 

@@ -1,20 +1,18 @@
-from typing import List, Optional
+from typing import Optional, List
 
 from pydantic import BaseModel, Field
 
-from src.domain.models.alternativa import Alternativa
-from src.domain.models.assunto import Assunto
 from src.domain.models.dto.alternativa_request import AlternativaRequest
 from src.domain.models.dto.cadastro_questao_request import CadastroQuestaoRequest
 from src.domain.models.dto.filtro_questao_request import FiltroQuestaoRequest
 from src.domain.models.enum.disciplina_enum import DisciplinaEnum
+from src.domain.models.enum.origem import OrigemEnum
 from src.domain.models.enum.tipo_questao_enum import TipoQuestaoEnum
-from src.domain.models.questao import Questao
 
 
 class AlternativaSchema(BaseModel):
     descricao: str
-    is_correta: bool
+    is_correta: Optional[bool]
 
 
 class CadastrarQuestaoSchema(BaseModel):
@@ -22,8 +20,9 @@ class CadastrarQuestaoSchema(BaseModel):
     disciplina: DisciplinaEnum
     ano: int
     instituicao: str
-    evento: Optional[str]
-    assuntos: List[int]
+    origem: OrigemEnum
+    origem_descricao: Optional[str]
+    assuntos: List[int] = Field(unique_items=True, description="Códigos dos Assuntos")
     enunciado: str
     alternativas: List[AlternativaSchema] = Field(..., min_items=3, max_items=5)
 
@@ -34,7 +33,8 @@ class CadastrarQuestaoSchema(BaseModel):
                                                self.alternativas)),
                                       self.instituicao,
                                       self.ano,
-                                      self.evento,
+                                      self.origem,
+                                      self.origem_descricao,
                                       self.disciplina,
                                       self.assuntos)
 
@@ -45,7 +45,8 @@ class QuestaoSchema(BaseModel):
     disciplina: DisciplinaEnum
     ano: int
     instituicao: str
-    evento: str
+    origem: OrigemEnum
+    origem_descricao: str
     enunciado: str
     assuntos: Optional[List[int]]
     alternativas: List[AlternativaSchema]
@@ -58,7 +59,8 @@ class QuestaoSimplesSchema(BaseModel):
     disciplina: DisciplinaEnum
     ano: int
     instituicao: str
-    evento: str
+    origem: OrigemEnum
+    origem_descricao: str
     enunciado: str
     cadastrador: str
 
@@ -67,18 +69,32 @@ class QuestaoPath(BaseModel):
     codigo: int
 
 
+class BuscarAssuntoQueryString(BaseModel):
+    disciplina: DisciplinaEnum
+
+
+class AssuntoSchema(BaseModel):
+    codigo: int
+    disciplina: DisciplinaEnum
+    descricao: str
+
+
 class FiltroQuestaoSchema(BaseModel):
     tipo: Optional[TipoQuestaoEnum]
     disciplina: Optional[DisciplinaEnum]
     ano: Optional[int]
     instituicao: Optional[str]
-    evento: Optional[str]
+    origem: Optional[OrigemEnum]
 
     def to_dto(self) -> FiltroQuestaoRequest:
         return FiltroQuestaoRequest(
             self.tipo,
             self.instituicao,
             self.ano,
-            self.evento,
+            self.origem,
             self.disciplina,
         )
+
+
+class ResultadoBooleanoSchema(BaseModel):
+    resultado: bool

@@ -3,6 +3,7 @@ from typing import List
 from src.domain.models.assunto import Assunto
 from src.domain.models.dto.alternativa_request import AlternativaRequest
 from src.domain.models.enum.disciplina_enum import DisciplinaEnum
+from src.domain.models.enum.origem import OrigemEnum
 from src.domain.models.enum.tipo_questao_enum import TipoQuestaoEnum
 from src.domain.models.questao import Questao
 
@@ -15,7 +16,8 @@ class CadastroQuestaoRequest:
                  alternativas: List[AlternativaRequest],
                  instituicao: str,
                  ano: int,
-                 evento: str,
+                 origem: OrigemEnum,
+                 origem_descricao: str,
                  disciplina: DisciplinaEnum,
                  assuntos: List[int]):
         self.tipo = tipo
@@ -23,19 +25,21 @@ class CadastroQuestaoRequest:
         self.alternativas = alternativas
         self.instituicao = instituicao
         self.ano = ano
-        self.evento = evento
+        self.origem = origem
+        self.origem_descricao = origem_descricao
         self.disciplina = disciplina
         self.assuntos = assuntos
 
-    def to_model(self) -> Questao:
+    def to_model(self, assuntos: List[Assunto]) -> Questao:
         return Questao(None,
                        self.tipo,
                        self.enunciado,
                        list(map(lambda it: it.to_model(), self.alternativas)),
                        self.instituicao,
                        self.ano,
-                       self.evento,
+                       self.origem,
+                       self.origem_descricao,
                        self.disciplina,
-                       list(map(lambda cod: Assunto(cod,self.disciplina, None), self.assuntos)),
+                       assuntos,
                        None
                        )
