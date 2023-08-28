@@ -1,5 +1,6 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
+__pypcache__
 *.py[cod]
 *$py.class
 
@@ -51,6 +52,7 @@ coverage.xml
 *.py,cover
 .hypothesis/
 .pytest_cache/
+.idea
 cover/
 
 # Translations
