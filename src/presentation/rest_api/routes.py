@@ -40,7 +40,7 @@ def home():
 @app.get('/api/questao/listar', tags=[questao_tag],
          responses={"200": QuestaoSimplesSchema, "500": ErrorSchema})
 def listar_todas():
-    """ Obtêm todas as questões cadastradas com o estado ativo
+    """ Obtêm todas as questões cadastradas em uma representação minimalista, ou seja, apenas os atributos básico da questão
 
     Retorna todas as questões ativas.
     """
@@ -55,10 +55,10 @@ def listar_todas():
 @app.get('/api/questao/exibir/<int:codigo>', tags=[questao_tag],
          responses={"200": QuestaoSchema, "400": ErrorSchema, "500": ErrorSchema})
 def exibir(path: QuestaoPath):
-    """Obtêm uma questão pelo código
+    """Obtêm uma questão a partir de seu código
 
     :param path: Identificador da questão
-    :return: Retorna uma representação de questão de acordo com código.
+    :return: Retorna uma representação de questão completa(com todos os atributos) de acordo com código.
     """
     try:
         use_case_exibir_questao = ExibirQuestao(questao_repository)
@@ -88,8 +88,8 @@ def cadastrar(body: CadastrarQuestaoSchema):
 @app.get('/api/questao/buscar', tags=[questao_tag],
          responses={"200": QuestaoSimplesSchema, "400": ErrorSchema, "500": ErrorSchema})
 def buscar(query: FiltroQuestaoSchema):
-    """Faz uma busca de acordo com filtro de pesquisa
-       Retorna as questões que atende ao filtro de pesquisa
+    """Faz uma busca de acordo com filtro de pesquisa.
+       Retorna as questões em uma representação minimalista atendendo aos critérios de busca.
     """
     try:
         filtro_request = query.to_dto()
@@ -104,7 +104,7 @@ def buscar(query: FiltroQuestaoSchema):
          responses={"200": AssuntoSchema, "404": ErrorSchema, "500": ErrorSchema})
 def listar_assuntos(query: BuscarAssuntoQueryString):
     """
-    Obtêm todos os assuntos associados a uma disciplina
+    Obtêm todos os assuntos associados a uma disciplina.
     :param query: identificador da disciplina
     :return: lista dos assuntos associados a uma disciplina
     """
@@ -119,7 +119,7 @@ def listar_assuntos(query: BuscarAssuntoQueryString):
 @app.delete('/api/questao/excluir/<int:codigo>', tags=[questao_tag],
             responses={"200": ResultadoBooleanoSchema, "400": ErrorSchema, "404": ErrorSchema, "500": ErrorSchema})
 def excluir(path: QuestaoPath):
-    """Exclui logicamente uma questão
+    """Exclui logicamente uma questão da base de dados
 
     :param path: Identificador da questão
     """
