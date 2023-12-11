@@ -8,13 +8,15 @@ from src.domain.use_cases.exibir_questao import ExibirQuestao
 from src.domain.use_cases.excluir_questao import ExcluirQuestao
 from src.domain.use_cases.listar_assuntos_por_disciplina import ListarAssuntosPorDisciplina
 from src.domain.use_cases.listar_questoes import ListarQuestoes
+from src.domain.use_cases.obter_disciplina_com_machine_learning import ObterDisciplinaComMachineLearning
 from src.infrastructure.db.repositories_impl.assunto_repository_db_impl import AssuntoRepositoryDbImpl
 from src.infrastructure.db.repositories_impl.questao_repository_db_impl import QuestaoRepositoryDbImpl
-from src.presentation.schemas.error import ErrorSchema
-from src.presentation.schemas.questao_schemas import QuestaoPath, QuestaoSchema, CadastrarQuestaoSchema, \
-    QuestaoSimplesSchema, FiltroQuestaoSchema, BuscarAssuntoQueryString, AssuntoSchema, ResultadoBooleanoSchema
-from src.presentation.utils.handle_errors import handle_errors
-from src.presentation.utils.serializer import serializa_dto
+from src.api.schemas.error import ErrorSchema
+from src.api.schemas.questao_schemas import QuestaoPath, QuestaoSchema, CadastrarQuestaoSchema, \
+    QuestaoSimplesSchema, FiltroQuestaoSchema, BuscarAssuntoQueryString, AssuntoSchema, ResultadoBooleanoSchema, \
+    BuscarDisciplina, DisciplinaSchema
+from src.api.utils.handle_errors import handle_errors
+from src.api.utils.serializer import serializa_dto
 
 info = Info(title="Base de Questões API", version="1.0.0")
 app = OpenAPI(__name__, info=info)
@@ -127,5 +129,21 @@ def excluir(path: QuestaoPath):
         use_case_excluir_questao = ExcluirQuestao(questao_repository)
         resultado = use_case_excluir_questao.execute(path.codigo)
         return make_response(serializa_dto({"resultado": resultado}), 200)
+    except Exception as ex:
+        return handle_errors(ex)
+
+
+@app.get('/api/questao/predicao_disciplina', tags=[questao_tag],
+         responses={"200": DisciplinaSchema, "404": ErrorSchema, "500": ErrorSchema})
+def obter_disciplina(query: BuscarDisciplina):
+    """
+    Obtêm disciplina através predição a partir do conteúdo do enunciado.
+    :param query: Enunciado
+    :return: DisciplinaEnum
+    """
+    try:
+        use_case_obter_disciplina_com_machine_learning = ObterDisciplinaComMachineLearning()
+        resultado = use_case_obter_disciplina_com_machine_learning.execute(query.enunciado)
+        return make_response(serializa_dto(resultado), 200)
     except Exception as ex:
         return handle_errors(ex)

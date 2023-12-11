@@ -73,10 +73,18 @@ class BuscarAssuntoQueryString(BaseModel):
     disciplina: DisciplinaEnum
 
 
+class BuscarDisciplina(BaseModel):
+    enunciado: str
+
+
 class AssuntoSchema(BaseModel):
     codigo: int
     disciplina: DisciplinaEnum
     descricao: str
+
+
+class DisciplinaSchema(BaseModel):
+    disciplina: DisciplinaEnum
 
 
 class FiltroQuestaoSchema(BaseModel):

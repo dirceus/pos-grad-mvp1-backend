@@ -2,7 +2,7 @@ from flask import make_response
 
 from src.domain.commons.exceptions import InvalidInputException, InvalidStateException, QuestaoNotFoundException, \
     BusinessException, InternalErrorException
-from src.presentation.utils.serializer import serializa_dto
+from src.api.utils.serializer import serializa_dto
 
 
 class ErroResponse:

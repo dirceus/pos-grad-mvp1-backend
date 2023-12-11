@@ -1,4 +1,4 @@
-from src.presentation.rest_api.routes import app
+from src.api.rest_api.routes import app
 
 
 if __name__ == "__main__":
