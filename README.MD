@@ -1,10 +1,13 @@
 # Base de Questão API
 
-Projeto faz parte do MVP 1 do curso de pós-graduação em Engenharia de Software da PUC-RIO.
+É uma api para implementação dos MVPs do curso de pós-graduação em Engenharia de Software da PUC-RIO.
 
-A Base de Questão API provê questões de concursos, vestibulares, certificação e dentre outras. Aplicações poderão 
-utilizar esse serviço construir simulados, exercícios e avaliações, ganhando agilidade no processo de criação e evitando
-o cadastro manual de questões visto que a base de questões disponibilizará um conjunto de questões.
+No primeiro MVP da disciplina **Desenvolvimento Full Stack Básico** foi desenvolvida uma API para cadastrar e consultar
+questões dos tipos: múltipla-escolha e verdadeiro-ou-falso, utilizando um banco de dados SQLite e com a API documentada
+utilizando o OpenAPI.
+
+Já no segundo MVP da disciplina **Qualidade de Software, Segurança e Sistemas Inteligentes** foi integrado a API um modelo
+de machine learning para predição da disciplina de uma questão a partir de seu enunciado. 
 
 ---
 ## Arquitetura da API
@@ -13,9 +16,7 @@ A aplicação foi construída base na arquitetura de clean architecture, compost
 
 - **Domínio** - onde está concentrada a lógica de negócio, essa camada não possui dependência de frameworks.
 - **Infraestrutura** - onde estão as tecnologias utilizadas como, por exemplo, banco de dados, log...  
-- **Apresentação** - camada que interage com os meios externos, sem conter nenhuma regra de negócio.
-
-![img.png](img.png)
+- **API** - camada que interage com os meios externos, sem conter nenhuma regra de negócio.
 
 Estrutura de Pacotes:
 
@@ -32,7 +33,8 @@ Estrutura de Pacotes:
     - Repositories (Implementation)
   - Memory
     - Repositories (Implementation)
-- Presentation
+  - Machine Learning Model
+- API
   - Rest API
   - Schemas
 
